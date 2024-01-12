@@ -5,7 +5,7 @@ Media3 Music is a music player built with Media3 and Jetpack Compose, It combine
 ## Features
 
 - **Jetpack Compose Powered:** Leverage the latest and greatest UI toolkit from Android for a seamless and efficient user interface.
-- **Intuitive Design:** Built with Media3 hence reducing boiler plate code and enhancing the experience
+- **Media3:** Built with Media3 hence reducing boiler plate code and enhancing the experience
 
 ## Screenshots
 
