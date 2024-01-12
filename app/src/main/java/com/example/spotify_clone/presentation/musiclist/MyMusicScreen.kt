@@ -2,6 +2,7 @@ package com.example.spotify_clone.presentation.musiclist
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -60,8 +63,10 @@ fun MyMusicScreen(
     onProgress: (Float) -> Unit,
     currentPlayingAudio: AudioItem,
     isAudioPlaying: Boolean,
+    isChecked: Boolean,
     audioList: List<AudioItem>,
     onStart: () -> Unit,
+    onCheckedChange: (Boolean) -> Unit,
     onItemClick: (Int) -> Unit,
     onNext: () -> Unit
 ) {
@@ -76,10 +81,16 @@ fun MyMusicScreen(
                 onNext = onNext
             )
         }
-    ) {
-        LazyColumn(contentPadding = it) {
+    ) { paddingValues ->
+        LazyColumn(contentPadding = paddingValues) {
             itemsIndexed(audioList) { index: Int, item: AudioItem ->
-                AudioItemComp(item = item) {
+                AudioItemComp(
+                    item = item,
+                    onCheckedChange = {
+                        onCheckedChange(it)
+                    },
+                    isChecked = isChecked
+                ) {
                     onItemClick(index)
                 }
             }
@@ -99,6 +110,8 @@ private fun timeStampToDuration(position: Long): String {
 @Composable
 fun AudioItemComp(
     item: AudioItem,
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
     onItemClick: () -> Unit
 ) {
     val painter = rememberAsyncImagePainter(
@@ -164,10 +177,17 @@ fun AudioItemComp(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Spacer(modifier = Modifier.width(50.dp))
+            Spacer(modifier = Modifier.width(30.dp))
             Text(
                 text = timeStampToDuration(item.duration),
                 style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Checkbox(
+                checked = isChecked,
+                onCheckedChange = {
+                    onCheckedChange(it)
+                }
             )
         }
     }
@@ -183,8 +203,19 @@ private fun BottomBarPlayer(
     onStart: () -> Unit,
     onNext: () -> Unit
 ) {
-    BottomAppBar {
-        Column(modifier = Modifier.padding(8.dp)) {
+    BottomAppBar(modifier = Modifier.height(100.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+        ) {
+            Text(
+                text = audio.title,
+                style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -192,7 +223,6 @@ private fun BottomBarPlayer(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ArtistInfo(modifier = Modifier.weight(1f), audio = audio)
                 MediaPlayerController(
                     isAudioPlaying = isAudioPlaying,
                     onStart = onStart,

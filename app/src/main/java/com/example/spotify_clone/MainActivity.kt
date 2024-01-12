@@ -123,7 +123,12 @@ class MainActivity : ComponentActivity() {
                     },
                     onNext = {
                         musicListScreenViewModel.onUIEvents(UIEvents.SeekToNext)
-                    }
+                    },
+                    isChecked = musicListScreenViewModel.isSelfLoop,
+                    onCheckedChange = {
+                        musicListScreenViewModel.isSelfLoop = it
+                        musicListScreenViewModel.onUIEvents(UIEvents.EnableSelfLoop(it))
+                    },
                 )
             }
         }

@@ -51,12 +51,14 @@ class MusicListScreenViewModel @Inject constructor(
     var isPlaying by savedStateHandle.saveable { mutableStateOf(false) }
     var currentSelectedAudio by savedStateHandle.saveable { mutableStateOf(audioDummy) }
     var audioList by savedStateHandle.saveable { mutableStateOf(listOf<AudioItem>()) }
+    var isSelfLoop by savedStateHandle.saveable { mutableStateOf(false) }
 
     private val _uiState: MutableState<UIState> = mutableStateOf(UIState.Initial)
     val uiState: State<UIState> = _uiState
     private val _musicList: MutableStateFlow<List<AudioItem>> =
         MutableStateFlow(listOf<AudioItem>())
     val musicList: StateFlow<List<AudioItem>> = _musicList
+
 
     init {
         viewModelScope.launch {
@@ -73,6 +75,10 @@ class MusicListScreenViewModel @Inject constructor(
                     is AudioState.Ready -> {
                         duration = mediaState.duration
                         _uiState.value = UIState.Ready
+                    }
+
+                    is AudioState.SelfLoop -> {
+                        isSelfLoop = mediaState.enabled
                     }
                 }
             }
@@ -111,6 +117,13 @@ class MusicListScreenViewModel @Inject constructor(
                     PlayerEvent.UpdateProgress(uiEvents.newProgress)
                 )
                 progress = uiEvents.newProgress
+            }
+
+            is UIEvents.EnableSelfLoop -> {
+                audioServiceHandler.onPlayerEvents(
+                    PlayerEvent.SelfLoop(isSelfLoop)
+                )
+
             }
         }
     }
@@ -173,9 +186,13 @@ sealed class UIEvents {
     object Backward : UIEvents()
     object Forward : UIEvents()
     data class UpdateProgress(val newProgress: Float) : UIEvents()
+
+    data class EnableSelfLoop(val enabled: Boolean) : UIEvents()
 }
 
 sealed class UIState {
     object Initial : UIState()
     object Ready : UIState()
+
+    object IsSelfLoop : UIState()
 }

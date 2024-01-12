@@ -94,6 +94,13 @@ class AudioServiceHandler @Inject constructor(
             is PlayerEvent.UpdateProgress -> {
                 exoPlayer.seekTo((exoPlayer.duration * playerEvent.newProgress).toLong())
             }
+
+            is PlayerEvent.SelfLoop -> {
+                if (playerEvent.enabled)
+                    exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
+                else
+                    exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
+            }
         }
     }
 
@@ -131,10 +138,12 @@ sealed class PlayerEvent {
     object Forward : PlayerEvent()
     object SeekTo : PlayerEvent()
     object Stop : PlayerEvent()
+    data class SelfLoop(val enabled: Boolean) : PlayerEvent()
     data class UpdateProgress(val newProgress: Float) : PlayerEvent()
 }
 
 sealed class AudioState {
+    data class SelfLoop(val enabled: Boolean) : AudioState()
     object Initial : AudioState()
     data class Ready(val duration: Long) : AudioState()
     data class Progress(val progress: Long) : AudioState()
