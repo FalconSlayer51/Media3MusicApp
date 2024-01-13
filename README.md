@@ -1,6 +1,6 @@
 # Media3 Music Player
 
-Media3 Music is a music player built with Media3 and Jetpack Compose, It combines a clean design with powerful functionality,
+Media3MusicApp is a music player built with Media3 and Jetpack Compose, It combines a clean design with powerful functionality,
 
 ## Features
 
@@ -17,7 +17,7 @@ Media3 Music is a music player built with Media3 and Jetpack Compose, It combine
 
 ## Getting Started
 
-Follow these steps to get Media3 up and running on your local machine.
+Follow these steps to get Project up and running on your local machine.
 
 1. Clone the repository:
    ```bash
